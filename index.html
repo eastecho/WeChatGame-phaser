@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Phaser Demo</title>
+</head>
+<body>
+<!--<script src="js/libs/phaser.min.js"></script>-->
+<script src="js/libs/gamelibs/pixi.min.js"></script>
+<script src="js/libs/gamelibs/p2.min.js"></script>
+<script src="js/libs/gamelibs/phaser-split.min.js"></script>
+<script>
+    var game = new Phaser.Game(320, 200, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update });
+
+    var sprite;
+
+    var filter;
+
+    function preload() {
+        game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+
+        // 载入 SpriteSheet 和 图片
+        game.load.spritesheet('shooter', 'images/spritesheet/shooter.png', 24, 24, 2);
+        game.load.image('bg', 'images/bg/field_1920.png');
+        game.load.shader('gray', 'filters/gray.frag');
+    }
+
+    function create() {
+        var back = game.add.image(0, 0, 'bg');
+        back.scale.set(0.2);
+        back.smoothed = false;
+
+        sprite = game.add.sprite(160, 160, 'shooter');
+        sprite.animations.add('walk');
+        sprite.animations.play('walk', 2, true);
+        sprite.anchor.set(0.5);
+        sprite.scale.set(2);
+        sprite.smoothed = false;
+
+        var text = game.add.text(5, 5, 'Phaser Test', { fill: 'white' });
+        text.smoothed = false;
+
+        filter = new Phaser.Filter(game, null, game.cache.getShader('gray'));
+        filter.uniforms.gray = { type: '1f', value: 1 };
+        sprite.filters = [ filter ];
+    }
+
+    function update() {
+        game.debug.inputInfo(5, 48);
+
+        if (game.input.mousePointer.isDown) {
+            if (game.input.x >= 160) {
+                sprite.scale.x = -2;
+                sprite.x += 1;
+            } else {
+                sprite.scale.x = 2;
+                sprite.x -= 1;
+            }
+        }
+    }
+</script>
+</body>
+</html>
